@@ -21,9 +21,12 @@ class HexLevel extends Entity {
     var hexMargin = 3;
     var wordlist :Map<String, Int>; // TODO: Map type?
     var word :String = "";
+    var activeHexagon :Hexagon;
+    var hexChain :Array<Hexagon>;
 
     override function init() {
         wordlist = new Map<String, Int>();
+        hexChain = new Array<Hexagon>();
         var words = Luxe.resources.find_text('assets/wordlists/en.txt');
         for (word in words.text.split("\n")) {
             wordlist.set(word, 0);
@@ -40,7 +43,7 @@ class HexLevel extends Entity {
     public function reset() {
         hexmap = new HexMap<Hexagon>();
         for (x in -2 ... 3) {
-            for (y in -3 ... 4) {
+            for (y in -3 ... 3) {
                 var key = { x: x - Math.floor(y / 2), y: y };
                 var pos = Vector.Add(Luxe.screen.mid, getHexPosition(key));
                 var hexagon = create_hexagon(key, pos, hexSize, getRandomLetter());
@@ -67,16 +70,39 @@ class HexLevel extends Entity {
 
     function create_hexagon(key: Hex, pos :Vector, size :Int, text :String) :Hexagon {
         var hexagon = new Hexagon(key, pos, size);
-        hexagon.add(new EventOnClick());
+        hexagon.add(new VisualInputEvents());
         hexagon.add(new Highlighter());
-        hexagon.events.listen('clicked', function(e) {
+        hexagon.events.listen('mouse_down', function(e) {
+            activeHexagon = hexagon;
+            word = text.toLowerCase();
+            hexChain.push(hexagon);
+            // for (h in getRing(hexagon.hex, 1)) {
+                hexagon.events.fire('highlight');
+            // }
+        });
+        hexagon.events.listen('mouse_move', function(e) {
+            if (hexagon != activeHexagon) {
+                activeHexagon = hexagon;
+                hexChain.push(hexagon);
+                word += text.toLowerCase();
+                // for (h in getRing(hexagon.hex, 1)) {
+                    hexagon.events.fire('highlight');
+                // }
+            }
+        });
+        hexagon.events.listen('mouse_up', function(e) {
             // trace('clicked on letter: $text'); // TODO: Make a LetterHexagon entity
-            word += text.toLowerCase();
+            if (activeHexagon == null) return;
+
+            while (!hexChain.empty()) {
+                hexChain.shift().events.fire('unhighlight');
+            }
+
+            activeHexagon = null;
             var inWordlist = (wordlist.get(word) != null);
             trace('Is $word in the word list; $inWordlist');
-            for (h in getRing(hexagon.hex, 1)) {
-                h.events.fire('highlight');
-            }
+
+            events.fire('guessed_word', { word: '$word', correct: inWordlist });
         });
 
         new Text({
@@ -92,4 +118,6 @@ class HexLevel extends Entity {
 
         return hexagon;
     }
+
+
 } //Main

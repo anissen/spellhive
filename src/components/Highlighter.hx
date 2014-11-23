@@ -16,10 +16,16 @@ class Highlighter extends Component {
 
     override function init() {
         visual = cast entity;
+
         visual.events.listen('highlight', function(e) {
-            visual.rotation_z = 0;
             Actuate
-                .tween(visual, 1.5, { rotation_z: visual.rotation_z + 360 })
+                .tween(visual.scale, 0.5, { x: 0.8, y: 0.8 })
+                .ease(luxe.tween.easing.Elastic.easeOut);
+        });
+
+        visual.events.listen('unhighlight', function(e) {
+            Actuate
+                .tween(visual.scale, 0.8, { x: 1.0, y: 1.0 })
                 .ease(luxe.tween.easing.Elastic.easeOut);
         });
     }
