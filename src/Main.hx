@@ -43,9 +43,13 @@ class Main extends luxe.Game {
         });
 
         hexLevel = new HexLevel();
-        hexLevel.events.listen('guessed_word', function(data) {
-            trace('word: ${data.word}, correct: ${data.correct}');
-            wordGuessText.text = 'word: ${data.word}, correct: ${data.correct}';
+        hexLevel.events.listen('guessed_word', function(data: { word :String, correct :Bool }) {
+            // trace('word: ${data.word}, correct: ${data.correct}');
+            wordGuessText.text = data.word;
+            wordGuessText.color.set(0, 0, 0);
+            wordGuessText.color
+                .tween(0.8, (data.correct ? { r: 0, g: 200 } : { r: 200, g: 0 }))
+                .ease(luxe.tween.easing.Quad.easeInOut);
         });
     }
 

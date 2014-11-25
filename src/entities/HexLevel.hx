@@ -5,6 +5,8 @@ import components.*;
 
 import luxe.Entity;
 import luxe.Input;
+import phoenix.geometry.LineGeometry;
+import luxe.options.GeometryOptions.LineGeometryOptions;
 import luxe.Text;
 import luxe.Vector;
 import luxe.Color;
@@ -22,11 +24,15 @@ class HexLevel extends Entity {
     var wordlist :Map<String, Int>; // TODO: Map type?
     var word :String = "";
     var activeHexagon :Hexagon;
+    var neighbors :Array<Hexagon>;
     var hexChain :Array<Hexagon>;
+    var hexChainLine :Array<LineGeometry>;
 
     override function init() {
         wordlist = new Map<String, Int>();
+        neighbors = new Array<Hexagon>();
         hexChain = new Array<Hexagon>();
+        hexChainLine = new Array<LineGeometry>();
         var words = Luxe.resources.find_text('assets/wordlists/en.txt');
         for (word in words.text.split("\n")) {
             wordlist.set(word, 0);
@@ -73,29 +79,56 @@ class HexLevel extends Entity {
         hexagon.add(new VisualInputEvents());
         hexagon.add(new Highlighter());
         hexagon.events.listen('mouse_down', function(e) {
+            trace('mouse_down');
             activeHexagon = hexagon;
             word = text.toLowerCase();
             hexChain.push(hexagon);
-            // for (h in getRing(hexagon.hex, 1)) {
-                hexagon.events.fire('highlight');
-            // }
+            hexagon.events.fire('highlight');
+            neighbors = getRing(hexagon.hex, 1);
+            for (h in neighbors) {
+                h.events.fire('highlight-minor');
+            }
         });
         hexagon.events.listen('mouse_move', function(e) {
             if (hexagon != activeHexagon) {
                 activeHexagon = hexagon;
                 hexChain.push(hexagon);
                 word += text.toLowerCase();
-                // for (h in getRing(hexagon.hex, 1)) {
-                    hexagon.events.fire('highlight');
-                // }
+                hexagon.events.fire('highlight');
+                for (h in neighbors) {
+                    if (hexChain.indexOf(h) == -1) {
+                        h.events.fire('unhighlight-minor');
+                    }
+                }
+                neighbors = getRing(hexagon.hex, 1);
+                for (h in neighbors) {
+                    h.events.fire('highlight-minor');
+                }
+
+                var line = Luxe.draw.line({ 
+                    p0: hexChain[hexChain.length-2].pos, 
+                    p1: hexChain[hexChain.length-1].pos, 
+                    color0: new Color().rgb(0xFF0000), 
+                    color1: new Color().rgb(0x0000FF)
+                });
+                hexChainLine.push(line);
             }
         });
         hexagon.events.listen('mouse_up', function(e) {
+            trace('mouse_up ${activeHexagon == null}');
             // trace('clicked on letter: $text'); // TODO: Make a LetterHexagon entity
             if (activeHexagon == null) return;
 
+            for (h in neighbors) {
+                h.events.fire('unhighlight-minor');
+            }
+
             while (!hexChain.empty()) {
                 hexChain.shift().events.fire('unhighlight');
+            }
+
+            while (!hexChainLine.empty()) {
+                hexChainLine.shift().drop();
             }
 
             activeHexagon = null;

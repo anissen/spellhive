@@ -28,5 +28,17 @@ class Highlighter extends Component {
                 .tween(visual.scale, 0.8, { x: 1.0, y: 1.0 })
                 .ease(luxe.tween.easing.Elastic.easeOut);
         });
+
+        visual.events.listen('highlight-minor', function(e) {
+            Actuate
+                .tween(visual.scale, 0.5, { x: 0.9, y: 0.9 })
+                .ease(luxe.tween.easing.Elastic.easeOut);
+        });
+
+        visual.events.listen('unhighlight-minor', function(e) {
+            Actuate
+                .tween(visual.scale, 0.8, { x: 1.0, y: 1.0 })
+                .ease(luxe.tween.easing.Elastic.easeOut);
+        });
     }
 }
