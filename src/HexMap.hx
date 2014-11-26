@@ -37,10 +37,23 @@ abstract Hex(Point) from Point to Point {
         return y;
     }
 
+    public function clone() :Hex {
+        return { x: x, y: y };
+    }
+
     @:to
     public function toString() :String {
         return '${this.x},${this.y}';
     }
+}
+
+enum Direction {
+    NW;
+    NE;
+    E;
+    SE;
+    SW;
+    W;
 }
 
 // TODO: Inline functions?
@@ -65,6 +78,15 @@ class HexMap<TValue> {
         return tile.value;
     }
 
+    public function getTiles() :Array<TValue> {
+        var hexes :Array<TValue> = [];
+        for (hex in map.iterator()) {
+            hexes.push(hex.value);
+        }
+        return hexes;
+        // return map.iterator();
+    }
+
     public function getKeys() :Array<Hex> {
         var hexes :Array<Hex> = [];
         for (hex in map.iterator()) {
@@ -74,22 +96,30 @@ class HexMap<TValue> {
         // return map.keys();
     }
 
-    public function getDirection(direction :Int) :Hex {
+    public function getDirection(direction :Direction) :Hex {
         var neighbors = [
             { x:  1, y: 0}, { x:  1, y: -1}, { x: 0, y: -1 },
             { x: -1, y: 0}, { x: -1, y:  1}, { x: 0, y:  1 }
         ];
-        return neighbors[direction];
+        var dir = switch (direction) {
+            case E:  0;
+            case NE: 1;
+            case NW: 2;
+            case W:  3;
+            case SW: 4;
+            case SE: 5;
+        }
+        return neighbors[dir];
     }
 
-    public function getNeighbor(hex :Hex, direction :Int) :Hex {
+    public function getNeighbor(hex :Hex, direction :Direction) :Hex {
         return hex + getDirection(direction);
     }
 
     public function getRing(hex :Hex, R: Int) :Array<Hex> {
-        var H = hex + getDirection(4) * R;
+        var H = hex + getDirection(Direction.SW) * R;
         var results = [];
-        for (i in 0 ... 6) {
+        for (i in [E, NE, NW, W, SW, SE]) {
             for (j in 0 ... R) {
                 results.push(H);
                 H = getNeighbor(H, i);

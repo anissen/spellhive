@@ -9,12 +9,9 @@ import luxe.Color;
 import HexMap.Hex;
 
 class Hexagon extends Visual {
-    public var hex(default, null) :Hex;
     var shape :Geometry;
 
-    public function new(_hex :Hex, _pos :Vector, _size :Float) {
-        hex = _hex;
-
+    public function new(_pos :Vector, _size :Float, ?_color :Color) {
         shape = Luxe.draw.ngon({
             r: _size,
             angle: 90,
@@ -25,7 +22,7 @@ class Hexagon extends Visual {
         super({
             name: 'hexagon.' + Luxe.utils.uniqueid(),
             pos: _pos,
-            color: new Color().rgb(Math.floor(0xf00000 + 0x00ffff * Math.random())),
+            color: (_color != null ? _color : new Color().rgb(Math.floor(0xf00000 + 0x00ffff * Math.random()))),
             geometry: shape,
         });
     }
