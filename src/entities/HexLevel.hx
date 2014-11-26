@@ -151,7 +151,7 @@ class HexLevel extends Entity {
                 var h = hexChain.shift();
                 hexmap.setTile(h.hex, null);
                 Actuate
-                    .tween(h.scale, 0.3, { x: 0, y: 0 })
+                    .tween(h.scale, 0.5, { x: 0, y: 0 })
                     .ease(luxe.tween.easing.Elastic.easeInOut)
                     .onComplete(function() { h.destroy(true); });
             }
@@ -173,39 +173,42 @@ class HexLevel extends Entity {
         return hexagon;
     }
 
+    var delay :Float = 0;
     function fillGaps() {
-        var changed = true;
-        var delay :Float = 0;
-        while (changed) {
-            changed = false;
-            var emptySortedKeys = hexmap.getKeys().filter(function(h) { return hexmap.getTile(h) == null; });
-            emptySortedKeys.sort(function(a, b) { return a.y - b.y; });
-            emptySortedKeys.sort(function(a, b) { return a.x - b.x; });
-            for (hex in emptySortedKeys) {
-                var directions = switch (Math.random() < 0.5) {
-                    case true:  [Direction.NW, Direction.NE];
-                    case false: [Direction.NE, Direction.NW];
-                };
-                for (direction in directions) {
-                    var neighbor = hexmap.getNeighbor(hex, direction);
-                    trace('neighbor: ${neighbor}');
-                    var newH = hexmap.getTile(neighbor);
-                    trace('newH is null: ${newH == null}');
-                    if (newH != null) {
-                        changed = true;
-                        var pos = getHexPosition(hex);
-                        newH.color.set(0, 255, 0);
-                        hexmap.setTile(newH.hex, null);
-                        newH.hex = hex.clone();
-                        hexmap.setTile(hex, newH);
-                        Actuate
-                            .tween(newH.pos, 0.6, { x: pos.x, y: pos.y })
-                            .ease(luxe.tween.easing.Quad.easeOut)
-                            .delay(delay);
-                        delay += 0.05;
-                        break;
-                    }
-                }
+        delay = 0;
+        
+        var emptySortedKeys = hexmap.getKeys().filter(function(h) { return hexmap.getTile(h) == null; });
+        emptySortedKeys.sort(function(a, b) { return b.y - a.y; });
+        emptySortedKeys.sort(function(a, b) { return b.x - a.x; });
+        for (hex in emptySortedKeys) {
+            fillGap(hex);
+        }
+    }
+
+    function fillGap(hex :Hex) {
+        var directions = switch (Math.random() < 0.5) {
+            case true:  [Direction.NW, Direction.NE];
+            case false: [Direction.NE, Direction.NW];
+        };
+        for (direction in directions) {
+            var neighbor = hexmap.getNeighbor(hex, direction);
+            var newH = hexmap.getTile(neighbor);
+            if (newH != null) {
+                var pos = getHexPosition(hex);
+                var oldHex = newH.hex.clone();
+                newH.color.set(0, 255, 0);
+                hexmap.setTile(newH.hex, null);
+                newH.hex = hex.clone();
+                hexmap.setTile(hex, newH);
+                Actuate
+                    .tween(newH.pos, 0.4, { x: pos.x, y: pos.y })
+                    .ease(luxe.tween.easing.Quad.easeOut)
+                    .delay(delay);
+                delay += 0.2;
+
+                // TODO: Fill one gap completely, then proceed to the next!
+                fillGap(oldHex);
+                break;
             }
         }
     }
