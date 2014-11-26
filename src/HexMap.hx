@@ -116,7 +116,15 @@ class HexMap<TValue> {
         return hex + getDirection(direction);
     }
 
-    public function getRing(hex :Hex, R: Int) :Array<Hex> {
+    public function getNextNeighbor(hex :Hex, direction :Direction) :Hex {
+        var neighbor = hex;
+        do {
+            neighbor = neighbor + getDirection(direction);
+        } while (map.exists(neighbor) && getTile(neighbor) == null); // until !exists or has tile
+        return neighbor;
+    }
+
+    public function getRing(hex :Hex, R :Int) :Array<Hex> {
         var H = hex + getDirection(Direction.SW) * R;
         var results = [];
         for (i in [E, NE, NW, W, SW, SE]) {

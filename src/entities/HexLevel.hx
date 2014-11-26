@@ -21,7 +21,7 @@ using Lambda;
 class HexLevel extends Entity {
     var hexmap :HexMap<LetterHexagon>;
     var hexSize = 50;
-    var hexMargin = 3;
+    var hexMargin = 5;
     var wordlist :Map<String, Int>; // TODO: Map type?
     var word :String = "";
     var activeHexagon :LetterHexagon;
@@ -59,7 +59,7 @@ class HexLevel extends Entity {
         for (x in -2 ... 3) {
             for (y in -3 ... 3) {
                 var key = { x: x - Math.floor(y / 2), y: y };
-                var pos = Vector.Add(Luxe.screen.mid, getHexPosition(key));
+                var pos = getHexPosition(key);
                 var hexagon = create_hexagon(key, pos, hexSize, getRandomLetter());
                 hexmap.setTile(key, hexagon);
             }
@@ -73,7 +73,7 @@ class HexLevel extends Entity {
         var vert_dist = (3 / 4) * height;
         var x = (hex.x + Math.floor(hex.y / 2)) * (horiz_dist + hexMargin) + Math.abs(hex.y % 2) * (horiz_dist + hexMargin) / 2;
         var y = hex.y * (vert_dist + hexMargin);
-        return new Vector(x, y);
+        return Vector.Add(Luxe.screen.mid, new Vector(x, y));
     }
 
     function getRing(hex :Hex, range :Int) :Array<LetterHexagon> {
@@ -149,14 +149,14 @@ class HexLevel extends Entity {
 
             while (!hexChain.empty()) {
                 var h = hexChain.shift();
-                if (!inWordlist) {
-                    h.events.fire('unhighlight');
-                } else {
-                    hexmap.setTile(h.hex, null);
-                    fillGap(h.hex, h.pos);
-                    h.destroy(true);
-                }
+                hexmap.setTile(h.hex, null);
+                Actuate
+                    .tween(h.scale, 0.3, { x: 0, y: 0 })
+                    .ease(luxe.tween.easing.Elastic.easeInOut)
+                    .onComplete(function() { h.destroy(true); });
             }
+
+            fillGaps();
         });
 
         new Text({
@@ -173,34 +173,41 @@ class HexLevel extends Entity {
         return hexagon;
     }
 
-    function fillGap(hex :Hex, pos: Vector) {
-        // for (h in hexmap.getTiles()) {
-            // hexagon removed
-            // if (h == null) {
-                trace('fillGap for ${hex}');
-                // TODO: Pick random direction array
-                for (direction in [/*Direction.NW,*/ Direction.NE]) {
-                    // trace('direction: ${direction}');
+    function fillGaps() {
+        var changed = true;
+        var delay :Float = 0;
+        while (changed) {
+            changed = false;
+            var emptySortedKeys = hexmap.getKeys().filter(function(h) { return hexmap.getTile(h) == null; });
+            emptySortedKeys.sort(function(a, b) { return a.y - b.y; });
+            emptySortedKeys.sort(function(a, b) { return a.x - b.x; });
+            for (hex in emptySortedKeys) {
+                var directions = switch (Math.random() < 0.5) {
+                    case true:  [Direction.NW, Direction.NE];
+                    case false: [Direction.NE, Direction.NW];
+                };
+                for (direction in directions) {
                     var neighbor = hexmap.getNeighbor(hex, direction);
                     trace('neighbor: ${neighbor}');
                     var newH = hexmap.getTile(neighbor);
                     trace('newH is null: ${newH == null}');
                     if (newH != null) {
+                        changed = true;
+                        var pos = getHexPosition(hex);
                         newH.color.set(0, 255, 0);
-                        var oldHex = newH.hex.clone();
-                        var oldPos = newH.pos.clone();
-                        hexmap.setTile(oldHex, null); 
-                        hexmap.setTile(hex, newH);
+                        hexmap.setTile(newH.hex, null);
                         newH.hex = hex.clone();
+                        hexmap.setTile(hex, newH);
                         Actuate
-                            .tween(newH.pos, 2.5, { x: pos.x, y: pos.y })
-                            .ease(luxe.tween.easing.Elastic.easeInOut)
-                            .onComplete(function() { fillGap(oldHex, oldPos); });
+                            .tween(newH.pos, 0.6, { x: pos.x, y: pos.y })
+                            .ease(luxe.tween.easing.Quad.easeOut)
+                            .delay(delay);
+                        delay += 0.05;
                         break;
                     }
                 }
-            // }
-        // }
+            }
+        }
     }
 
 } //Main
