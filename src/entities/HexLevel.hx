@@ -19,19 +19,19 @@ import HexMap.Hex;
 using Lambda;
 
 class HexLevel extends Entity {
+    var letterFrequencies :LetterFrequencies;
     var hexmap :HexMap<LetterHexagon>;
     var hexSize = 50;
     var hexMargin = 5;
     var wordlist :Map<String, Int>; // TODO: Map type?
     var word :String = "";
     var activeHexagon :LetterHexagon;
-    // var neighbors :Array<Hexagon>;
     var hexChain :Array<LetterHexagon>;
     var hexChainLine :Array<LineGeometry>;
 
     override function init() {
+        letterFrequencies = new LetterFrequencies();
         wordlist = new Map<String, Int>();
-        // neighbors = new Array<Hexagon>();
         hexChain = new Array<LetterHexagon>();
         hexChainLine = new Array<LineGeometry>();
         var words = Luxe.resources.find_text('assets/wordlists/en.txt');
@@ -43,8 +43,9 @@ class HexLevel extends Entity {
     } //ready
 
     function getRandomLetter() :String {
-        var letters = "ABCDEFGHIJKLMNOPQRSTUVWX";
-        return letters.charAt(Math.floor(Math.random() * letters.length));
+        // var letters = "ABCDEFGHIJKLMNOPQRSTUVWX";
+        // return letters.charAt(Math.floor(Math.random() * letters.length));
+        return letterFrequencies.randomLetter();
     }
 
     public function reset() {
@@ -91,10 +92,6 @@ class HexLevel extends Entity {
             word = text.toLowerCase();
             hexChain.push(hexagon);
             hexagon.events.fire('highlight');
-            // neighbors = getRing(hexagon.hex, 1);
-            // for (h in neighbors) {
-            //     h.events.fire('highlight-minor');
-            // }
         });
         hexagon.events.listen('mouse_move', function(e) {
             if (hexagon != activeHexagon) {
@@ -102,15 +99,6 @@ class HexLevel extends Entity {
                 hexChain.push(hexagon);
                 word += text.toLowerCase();
                 hexagon.events.fire('highlight');
-                // for (h in neighbors) {
-                //     if (hexChain.indexOf(h) == -1) {
-                //         h.events.fire('unhighlight-minor');
-                //     }
-                // }
-                // neighbors = getRing(hexagon.hex, 1);
-                // for (h in neighbors) {
-                //     h.events.fire('highlight-minor');
-                // }
 
                 var line = Luxe.draw.line({ 
                     p0: hexChain[hexChain.length-2].pos, 
@@ -124,12 +112,7 @@ class HexLevel extends Entity {
 
         // TODO: The hexagon is made smaller, thus failing mouse up. Make the hexagon geometry scale static + add various components for foreground, text etc..
         hexagon.events.listen('mouse_up', function(e) {
-            // trace('clicked on letter: $text'); // TODO: Make a LetterHexagon entity
             if (activeHexagon == null) return;
-
-            // for (h in neighbors) {
-            //     h.events.fire('unhighlight-minor');
-            // }
 
             while (!hexChainLine.empty()) {
                 hexChainLine.shift().drop();
@@ -143,17 +126,20 @@ class HexLevel extends Entity {
                 alreadyUsed = (fromWordlist > 0);
                 wordlist.set(word, 1);
             }
-            // trace('Is $word in the word list; $inWordlist');
 
             events.fire('guessed_word', { word: '$word', correct: inWordlist, alreadyUsed: alreadyUsed });
 
             while (!hexChain.empty()) {
                 var h = hexChain.shift();
-                hexmap.setTile(h.hex, null);
-                Actuate
-                    .tween(h.scale, 0.5, { x: 0, y: 0 })
-                    .ease(luxe.tween.easing.Elastic.easeInOut)
-                    .onComplete(function() { h.destroy(true); });
+                if (!inWordlist) {
+                    h.events.fire('unhighlight');
+                } else {
+                    hexmap.setTile(h.hex, null);
+                    Actuate
+                        .tween(h.scale, 0.3, { x: 0, y: 0 })
+                        .ease(luxe.tween.easing.Elastic.easeInOut)
+                        .onComplete(function() { h.destroy(true); });
+                }
             }
 
             fillGaps();
@@ -175,8 +161,6 @@ class HexLevel extends Entity {
 
     var delay :Float = 0;
     function fillGaps() {
-        
-        
         var emptySortedKeys = hexmap.getKeys().filter(function(h) { return hexmap.getTile(h) == null; });
         emptySortedKeys.sort(function(a, b) { return b.y - a.y; });
         emptySortedKeys.sort(function(a, b) { return b.x - a.x; });
@@ -202,12 +186,12 @@ class HexLevel extends Entity {
                 hexmap.setTile(hex, newH);
                 var newRotation = newH.rotation_z + ((direction == Direction.NE) ? -60 : 60);
                 Actuate
-                    .tween(newH.pos, 0.3, { x: pos.x, y: pos.y })
-                    .ease(luxe.tween.easing.Bounce.easeOut)
-                    .delay(delay);
-                Actuate
                     .tween(newH, 0.2, { rotation_z: newRotation })
                     .ease(luxe.tween.easing.Quad.easeInOut)
+                    .delay(delay);
+                Actuate
+                    .tween(newH.pos, 0.3, { x: pos.x, y: pos.y })
+                    .ease(luxe.tween.easing.Bounce.easeOut)
                     .delay(delay);
                 delay += 0.25;
 
