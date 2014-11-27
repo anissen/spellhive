@@ -37,9 +37,9 @@ class Main extends luxe.Game {
         wordGuessText = new Text({
             // no_scene: true,
             text: "",
-            pos: new Vector(Luxe.screen.w / 2, Luxe.screen.h - 80),
+            pos: new Vector(Luxe.screen.w / 2, Luxe.screen.h - 100),
             color: new Color().rgb(0xffffff),
-            size: 42,
+            size: 46,
             align: center, 
             align_vertical: center
         });
@@ -48,10 +48,16 @@ class Main extends luxe.Game {
         hexLevel.events.listen('guessed_word', function(data: { word :String, correct :Bool, alreadyUsed :Bool }) {
             // trace('word: ${data.word}, correct: ${data.correct}');
             wordGuessText.text = data.word;
+            
+            wordGuessText.scale.set_xy(0, 0);
+            luxe.tween.Actuate
+                .tween(wordGuessText.scale, 0.4, { x: 1.0, y: 1.0 })
+                .ease(luxe.tween.easing.Elastic.easeInOut);
+
             wordGuessText.color.set(0, 0, 0);
             var color :Dynamic = (data.correct ? (data.alreadyUsed ? { r: 0, g: 0, b: 200 } : { r: 0, g: 200, b: 0 } ) : { r: 200, g: 0, b: 0 });
             wordGuessText.color
-                .tween(0.8, color)
+                .tween(0.4, color)
                 .ease(luxe.tween.easing.Quad.easeInOut);
         });
     }

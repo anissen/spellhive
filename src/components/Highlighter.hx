@@ -18,9 +18,10 @@ class Highlighter extends Component {
 
     override function init() {
         visual = cast entity;
-        bgcolor = visual.color;
+        bgcolor = visual.color.clone();
 
         visual.events.listen('highlight', function(e) {
+            trace('highlight');
             visual.color.rgb(0x7D3101);
             Actuate
                 .tween(visual.scale, 0.5, { x: 0.9, y: 0.9 })
@@ -28,6 +29,7 @@ class Highlighter extends Component {
         });
 
         visual.events.listen('unhighlight', function(e) {
+            trace('unhighlight');
             visual.color = bgcolor;
             Actuate
                 .tween(visual.scale, 0.8, { x: 1.0, y: 1.0 })

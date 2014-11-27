@@ -103,8 +103,8 @@ class HexLevel extends Entity {
                 var line = Luxe.draw.line({ 
                     p0: hexChain[hexChain.length-2].pos, 
                     p1: hexChain[hexChain.length-1].pos, 
-                    color0: new Color().rgb(0xFF00FF), 
-                    color1: new Color().rgb(0x0000FF)
+                    color0: new Color().rgb(0x7D3101), 
+                    color1: new Color().rgb(0x7D3101)
                 });
                 hexChainLine.push(line);
             }
@@ -131,7 +131,8 @@ class HexLevel extends Entity {
 
             while (!hexChain.empty()) {
                 var h = hexChain.shift();
-                if (!inWordlist) {
+                if (!inWordlist || alreadyUsed) {
+                    trace('remove highligth');
                     h.events.fire('unhighlight');
                 } else {
                     hexmap.setTile(h.hex, null);
