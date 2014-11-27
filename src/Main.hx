@@ -13,6 +13,8 @@ class Main extends luxe.Game {
     var wordGuessText :Text;
 
     override function ready() {
+        Luxe.renderer.clear_color.rgb(0xCC8739);
+
         var json_asset = Luxe.loadJSON("assets/parcel.json");
 
         var preload = new Parcel();

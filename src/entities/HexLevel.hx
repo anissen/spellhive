@@ -115,7 +115,7 @@ class HexLevel extends Entity {
                 var line = Luxe.draw.line({ 
                     p0: hexChain[hexChain.length-2].pos, 
                     p1: hexChain[hexChain.length-1].pos, 
-                    color0: new Color().rgb(0xFF0000), 
+                    color0: new Color().rgb(0xFF00FF), 
                     color1: new Color().rgb(0x0000FF)
                 });
                 hexChainLine.push(line);
@@ -162,9 +162,9 @@ class HexLevel extends Entity {
         new Text({
             // no_scene: false,
             text: text,
-            pos: new Vector(0, -20),
+            pos: new Vector(0, -30),
             color: new Color().rgb(0x000000),
-            size: 36,
+            size: 42,
             align: center, 
             align_vertical: center,
             parent: hexagon
@@ -196,7 +196,7 @@ class HexLevel extends Entity {
             if (newH != null) {
                 var pos = getHexPosition(hex);
                 var oldHex = newH.hex.clone();
-                newH.color.set(0, 255, 0);
+                newH.color.set(255, 100, 100);
                 hexmap.setTile(newH.hex, null);
                 newH.hex = hex.clone();
                 hexmap.setTile(hex, newH);
@@ -207,6 +207,7 @@ class HexLevel extends Entity {
                 delay += 0.2;
 
                 // TODO: Fill one gap completely, then proceed to the next!
+                // IDEA: Find each tile that can fall down (one above each gap) and make it fall recursively
                 fillGap(oldHex);
                 break;
             }
