@@ -100,6 +100,11 @@ class HexLevel extends Entity {
                 word += text.toLowerCase();
                 hexagon.events.fire('highlight');
 
+                var fromWordlist = wordlist.get(word);
+                var inWordlist   = (fromWordlist != null);
+                var alreadyUsed  = (inWordlist && fromWordlist > 0);
+                events.fire('spelling_word', { word: word.toUpperCase(), correct: inWordlist, alreadyUsed: alreadyUsed });
+
                 var line = Luxe.draw.line({ 
                     p0: hexChain[hexChain.length-2].pos, 
                     p1: hexChain[hexChain.length-1].pos, 
@@ -127,12 +132,11 @@ class HexLevel extends Entity {
                 wordlist.set(word, 1);
             }
 
-            events.fire('guessed_word', { word: '$word', correct: inWordlist, alreadyUsed: alreadyUsed });
+            events.fire('guessed_word', { word: word.toUpperCase(), correct: inWordlist, alreadyUsed: alreadyUsed });
 
             while (!hexChain.empty()) {
                 var h = hexChain.shift();
                 if (!inWordlist || alreadyUsed) {
-                    trace('remove highligth');
                     h.events.fire('unhighlight');
                 } else {
                     hexmap.setTile(h.hex, null);

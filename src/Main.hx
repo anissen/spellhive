@@ -45,20 +45,25 @@ class Main extends luxe.Game {
         });
 
         hexLevel = new HexLevel();
-        hexLevel.events.listen('guessed_word', function(data: { word :String, correct :Bool, alreadyUsed :Bool }) {
-            // trace('word: ${data.word}, correct: ${data.correct}');
-            wordGuessText.text = data.word;
-            
-            wordGuessText.scale.set_xy(0, 0);
+
+        hexLevel.events.listen('spelling_word', function(data: { word :String, correct :Bool, alreadyUsed :Bool }) {
+
             luxe.tween.Actuate
-                .tween(wordGuessText.scale, 0.4, { x: 1.0, y: 1.0 })
+                .tween(wordGuessText.scale, 0.3, { x: 1, y: 1 })
                 .ease(luxe.tween.easing.Elastic.easeInOut);
 
+            wordGuessText.text = data.word;
             wordGuessText.color.set(0, 0, 0);
-            var color :Dynamic = (data.correct ? (data.alreadyUsed ? { r: 0, g: 0, b: 200 } : { r: 0, g: 200, b: 0 } ) : { r: 200, g: 0, b: 0 });
+            var color :Dynamic = (data.correct ? (data.alreadyUsed ? { r: 0, g: 0, b: 0.7 } : { r: 0, g: 0.7, b: 0 } ) : { r: 0.7, g: 0, b: 0 });
             wordGuessText.color
-                .tween(0.4, color)
+                .tween(0.2, color)
                 .ease(luxe.tween.easing.Quad.easeInOut);
+        });
+
+        hexLevel.events.listen('guessed_word', function(data: { word :String, correct :Bool, alreadyUsed :Bool }) {
+            luxe.tween.Actuate
+                .tween(wordGuessText.scale, 0.3, { x: 0, y: 0 })
+                .ease(luxe.tween.easing.Elastic.easeInOut);
         });
     }
 
