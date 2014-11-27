@@ -19,7 +19,10 @@ class LetterHexagon extends Hexagon {
         hex = _hex;
 
         // background = new Hexagon(_pos, _size, new Color().rgb(0x111111));
-        var foregroundColor = new Color().rgb(0xEB5E07 + Math.floor(0xffffff * Math.random() * 0.0001));
+        var foregroundColor = new Color().rgb(0xEB5E07);
+        foregroundColor.r += Math.random() * 0.05;
+        foregroundColor.g += Math.random() * 0.05;
+        foregroundColor.b += Math.random() * 0.05;
         foreground = new Hexagon(new Vector(), _size - 7, foregroundColor);
         foreground.parent = this;
 

@@ -162,8 +162,8 @@ class HexLevel extends Entity {
         new Text({
             // no_scene: false,
             text: text,
-            pos: new Vector(0, -30),
-            color: new Color().rgb(0x000000),
+            pos: new Vector(0, -25),
+            color: new Color().rgb(0x080602),
             size: 42,
             align: center, 
             align_vertical: center,
@@ -196,7 +196,7 @@ class HexLevel extends Entity {
             if (newH != null) {
                 var pos = getHexPosition(hex);
                 var oldHex = newH.hex.clone();
-                newH.color.set(255, 100, 100);
+                newH.color.set(0.8, 0, 0);
                 hexmap.setTile(newH.hex, null);
                 newH.hex = hex.clone();
                 hexmap.setTile(hex, newH);
