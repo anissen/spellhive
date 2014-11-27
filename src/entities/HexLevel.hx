@@ -175,12 +175,13 @@ class HexLevel extends Entity {
 
     var delay :Float = 0;
     function fillGaps() {
-        delay = 0;
+        
         
         var emptySortedKeys = hexmap.getKeys().filter(function(h) { return hexmap.getTile(h) == null; });
         emptySortedKeys.sort(function(a, b) { return b.y - a.y; });
         emptySortedKeys.sort(function(a, b) { return b.x - a.x; });
         for (hex in emptySortedKeys) {
+            delay = 0;
             fillGap(hex);
         }
     }
@@ -196,18 +197,20 @@ class HexLevel extends Entity {
             if (newH != null) {
                 var pos = getHexPosition(hex);
                 var oldHex = newH.hex.clone();
-                newH.color.set(0.8, 0, 0);
                 hexmap.setTile(newH.hex, null);
                 newH.hex = hex.clone();
                 hexmap.setTile(hex, newH);
+                var newRotation = newH.rotation_z + ((direction == Direction.NE) ? -60 : 60);
                 Actuate
-                    .tween(newH.pos, 0.4, { x: pos.x, y: pos.y })
-                    .ease(luxe.tween.easing.Quad.easeOut)
+                    .tween(newH.pos, 0.3, { x: pos.x, y: pos.y })
+                    .ease(luxe.tween.easing.Bounce.easeOut)
                     .delay(delay);
-                delay += 0.2;
+                Actuate
+                    .tween(newH, 0.2, { rotation_z: newRotation })
+                    .ease(luxe.tween.easing.Quad.easeInOut)
+                    .delay(delay);
+                delay += 0.25;
 
-                // TODO: Fill one gap completely, then proceed to the next!
-                // IDEA: Find each tile that can fall down (one above each gap) and make it fall recursively
                 fillGap(oldHex);
                 break;
             }
