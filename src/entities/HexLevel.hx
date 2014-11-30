@@ -27,6 +27,8 @@ class HexLevel extends Entity {
     var activeHexagon :LetterHexagon;
     var hexChain :Array<LetterHexagon>;
     var hexChainLine :Array<LineGeometry>;
+    var tilesX = 7;
+    var tilesY = 5;
 
     override function init() {
         letterFrequencies = new LetterFrequencies();
@@ -36,6 +38,14 @@ class HexLevel extends Entity {
         var words = Luxe.resources.find_text('assets/wordlists/en.txt');
         for (word in words.text.split("\n")) {
             wordlist.set(word, 0);
+        }
+        for (x in -Math.floor(tilesX / 2) ... Math.ceil(tilesX / 2)) {
+            for (y in -Math.floor(tilesY / 2) ... Math.ceil(tilesY / 2)) {
+                if (Math.abs(y) % 2 == 1 && x == Math.floor(tilesX / 2)) continue;
+                var key = { x: x - Math.floor(y / 2), y: y };
+                var pos = getHexPosition(key);
+                var bg = new Hexagon(pos, hexSize + Math.floor(hexMargin / 2), -1, new Color().rgb(0x7D3101)); // background hex
+            }
         }
 
         reset();
@@ -56,14 +66,12 @@ class HexLevel extends Entity {
             }
         }
         hexmap = new HexMap<LetterHexagon>();
-        var tilesX = 7;
-        var tilesY = 5;
         for (x in -Math.floor(tilesX / 2) ... Math.ceil(tilesX / 2)) {
             for (y in -Math.floor(tilesY / 2) ... Math.ceil(tilesY / 2)) {
                 if (Math.abs(y) % 2 == 1 && x == Math.floor(tilesX / 2)) continue;
                 var key = { x: x - Math.floor(y / 2), y: y };
                 var pos = getHexPosition(key);
-                var hexagon = create_hexagon(key, pos, hexSize, getRandomLetter());
+                var hexagon = create_hexagon(key, pos, hexSize - 5, getRandomLetter());
                 hexmap.setTile(key, hexagon);
             }
         }

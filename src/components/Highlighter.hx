@@ -25,7 +25,7 @@ class Highlighter extends Component {
         visual.events.listen('highlight', function(e) {
             visual.color.rgb(0x7D3101);
             Actuate
-                .tween(visual.foreground.scale, 0.5, { x: 0.9, y: 0.9 })
+                .tween(visual.foreground.scale, 0.5, { x: 0.95, y: 0.95 })
                 .ease(luxe.tween.easing.Elastic.easeOut);
         });
 

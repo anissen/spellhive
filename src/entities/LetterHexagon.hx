@@ -25,7 +25,7 @@ class LetterHexagon extends Hexagon {
         foregroundColor.r += Math.random() * 0.05;
         foregroundColor.g += Math.random() * 0.05;
         foregroundColor.b += Math.random() * 0.05;
-        foreground = new Hexagon(new Vector(), _size - 7, foregroundColor);
+        foreground = new Hexagon(new Vector(), _size - 5, foregroundColor);
         foreground.parent = this;
 
         text = new Text({
