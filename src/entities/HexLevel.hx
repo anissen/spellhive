@@ -7,7 +7,6 @@ import luxe.Entity;
 import luxe.Input;
 import phoenix.geometry.LineGeometry;
 import luxe.options.GeometryOptions.LineGeometryOptions;
-import luxe.Text;
 import luxe.Vector;
 import luxe.Color;
 import luxe.tween.Actuate;
@@ -87,7 +86,7 @@ class HexLevel extends Entity {
     }
 
     function create_hexagon(key: Hex, pos :Vector, size :Int, text :String) :LetterHexagon {
-        var hexagon = new LetterHexagon(key, pos, size);
+        var hexagon = new LetterHexagon(key, pos, size, text);
         hexagon.add(new VisualInputEvents());
         hexagon.add(new Highlighter());
         hexagon.events.listen('mouse_down', function(e) {
@@ -143,25 +142,11 @@ class HexLevel extends Entity {
                     h.events.fire('unhighlight');
                 } else {
                     hexmap.setTile(h.hex, null);
-                    Actuate
-                        .tween(h.scale, 0.3, { x: 0, y: 0 })
-                        .ease(luxe.tween.easing.Elastic.easeInOut)
-                        .onComplete(function() { h.destroy(true); });
+                    h.kill();
                 }
             }
 
             fillGaps();
-        });
-
-        new Text({
-            // no_scene: false,
-            text: text,
-            pos: new Vector(0, -25),
-            color: new Color().rgb(0x080602),
-            size: 42,
-            align: center, 
-            align_vertical: center,
-            parent: hexagon
         });
 
         return hexagon;
