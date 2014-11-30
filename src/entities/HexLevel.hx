@@ -20,8 +20,8 @@ using Lambda;
 class HexLevel extends Entity {
     var letterFrequencies :LetterFrequencies;
     var hexmap :HexMap<LetterHexagon>;
-    var hexSize = 50;
-    var hexMargin = 5;
+    var hexSize :Float = 50;
+    var hexMargin :Float = 5;
     var wordlist :Map<String, Int>; // TODO: Map type?
     var word :String = "";
     var activeHexagon :LetterHexagon;
@@ -39,21 +39,36 @@ class HexLevel extends Entity {
         for (word in words.text.split("\n")) {
             wordlist.set(word, 0);
         }
+
+        if (Luxe.screen.h > Luxe.screen.w) {
+            var oldTilesX = tilesX;
+            tilesX = tilesY;
+            tilesY = oldTilesX;
+        }
+
+        var ratio = Math.min(Luxe.screen.w / tilesX, Luxe.screen.h / tilesY);
+        hexSize   = ratio * 0.5 * 0.95; // 0.5 because height = hexSize * 2
+        hexMargin = ratio * 0.5 * 0.05;
+        
+        forEachHex(function(data) {
+            new Hexagon(data.pos, hexSize + hexMargin, -1, new Color().rgb(0xf3c467)); // background hex
+        });
+
+        reset();
+    } //ready
+
+    function forEachHex(f :{ key: Hex, pos: Vector } -> Void) {
         for (x in -Math.floor(tilesX / 2) ... Math.ceil(tilesX / 2)) {
             for (y in -Math.floor(tilesY / 2) ... Math.ceil(tilesY / 2)) {
                 if (Math.abs(y) % 2 == 1 && x == Math.floor(tilesX / 2)) continue;
                 var key = { x: x - Math.floor(y / 2), y: y };
                 var pos = getHexPosition(key);
-                var bg = new Hexagon(pos, hexSize + hexMargin, -1, new Color().rgb(0xf3c467)); // background hex
+                f({ key: key, pos: pos });
             }
         }
-
-        reset();
-    } //ready
+    }
 
     function getRandomLetter() :String {
-        // var letters = "ABCDEFGHIJKLMNOPQRSTUVWX";
-        // return letters.charAt(Math.floor(Math.random() * letters.length));
         return letterFrequencies.randomLetter();
     }
 
@@ -66,15 +81,10 @@ class HexLevel extends Entity {
             }
         }
         hexmap = new HexMap<LetterHexagon>();
-        for (x in -Math.floor(tilesX / 2) ... Math.ceil(tilesX / 2)) {
-            for (y in -Math.floor(tilesY / 2) ... Math.ceil(tilesY / 2)) {
-                if (Math.abs(y) % 2 == 1 && x == Math.floor(tilesX / 2)) continue;
-                var key = { x: x - Math.floor(y / 2), y: y };
-                var pos = getHexPosition(key);
-                var hexagon = create_hexagon(key, pos, hexSize, getRandomLetter());
-                hexmap.setTile(key, hexagon);
-            }
-        }
+        forEachHex(function(data) {
+            var hexagon = create_hexagon(data.key, data.pos, hexSize, getRandomLetter());
+            hexmap.setTile(data.key, hexagon);
+        });
     }
 
     function getHexPosition(hex :Hex) :Vector {
@@ -93,7 +103,7 @@ class HexLevel extends Entity {
                 .filter(function(hex) { return hex != null; });
     }
 
-    function create_hexagon(key: Hex, pos :Vector, size :Int, text :String) :LetterHexagon {
+    function create_hexagon(key: Hex, pos :Vector, size :Float, text :String) :LetterHexagon {
         var hexagon = new LetterHexagon(key, pos, size, text);
         hexagon.add(new VisualInputEvents());
         hexagon.add(new Highlighter());
