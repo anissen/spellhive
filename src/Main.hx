@@ -48,9 +48,7 @@ class Main extends luxe.Game {
 
         hexLevel.events.listen('spelling_word', function(data: { word :String, correct :Bool, alreadyUsed :Bool }) {
 
-            luxe.tween.Actuate
-                .tween(wordGuessText.scale, 0.3, { x: 1, y: 1 })
-                .ease(luxe.tween.easing.Elastic.easeInOut);
+            wordGuessText.scale.set_xy(1, 1);
 
             wordGuessText.text = data.word;
             wordGuessText.color.set(0, 0, 0);

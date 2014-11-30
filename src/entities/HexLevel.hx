@@ -57,8 +57,11 @@ class HexLevel extends Entity {
             }
         }
         hexmap = new HexMap<LetterHexagon>();
-        for (x in -2 ... 3) {
-            for (y in -3 ... 3) {
+        var tilesX = 7;
+        var tilesY = 5;
+        for (x in -Math.floor(tilesX / 2) ... Math.ceil(tilesX / 2)) {
+            for (y in -Math.floor(tilesY / 2) ... Math.ceil(tilesY / 2)) {
+                if (Math.abs(y) % 2 == 1 && x == Math.floor(tilesX / 2)) continue;
                 var key = { x: x - Math.floor(y / 2), y: y };
                 var pos = getHexPosition(key);
                 var hexagon = create_hexagon(key, pos, hexSize, getRandomLetter());
