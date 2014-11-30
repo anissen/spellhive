@@ -16,12 +16,12 @@ class LetterHexagon extends Hexagon {
     var text :Text;
 
     public function new(_hex :Hex, _pos :Vector, _size :Float, letter :String) {
-        super(_pos, _size, new Color().rgb(0xF5BB0F));
+        super(_pos, _size, new Color().rgb(0xfdfffc));
 
         hex = _hex;
 
         // background = new Hexagon(_pos, _size, new Color().rgb(0x111111));
-        var foregroundColor = new Color().rgb(0xEB5E07);
+        var foregroundColor = new Color().rgb(0xf9c735);
         foregroundColor.r += Math.random() * 0.05;
         foregroundColor.g += Math.random() * 0.05;
         foregroundColor.b += Math.random() * 0.05;

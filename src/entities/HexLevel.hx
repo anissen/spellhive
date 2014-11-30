@@ -44,7 +44,7 @@ class HexLevel extends Entity {
                 if (Math.abs(y) % 2 == 1 && x == Math.floor(tilesX / 2)) continue;
                 var key = { x: x - Math.floor(y / 2), y: y };
                 var pos = getHexPosition(key);
-                var bg = new Hexagon(pos, hexSize + Math.floor(hexMargin / 2), -1, new Color().rgb(0x7D3101)); // background hex
+                var bg = new Hexagon(pos, hexSize + hexMargin, -1, new Color().rgb(0x899da8)); // background hex
             }
         }
 
@@ -71,7 +71,7 @@ class HexLevel extends Entity {
                 if (Math.abs(y) % 2 == 1 && x == Math.floor(tilesX / 2)) continue;
                 var key = { x: x - Math.floor(y / 2), y: y };
                 var pos = getHexPosition(key);
-                var hexagon = create_hexagon(key, pos, hexSize - 5, getRandomLetter());
+                var hexagon = create_hexagon(key, pos, hexSize, getRandomLetter());
                 hexmap.setTile(key, hexagon);
             }
         }
