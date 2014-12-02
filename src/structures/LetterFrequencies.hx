@@ -1,4 +1,6 @@
 
+package structures;
+
 class LetterFrequencies {
     var en = [
         14810   => "A",

@@ -1,4 +1,6 @@
 
+package structures;
+
 typedef Point = { x: Int, y: Int };
 
 abstract Hex(Point) from Point to Point {

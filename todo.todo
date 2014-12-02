@@ -1,0 +1,9 @@
+
+TODO for "Spelling Bee":
+ 
+    ☐ Architecture:
+        Main -> Creates a Game Scene
+        GameScene -> Creates a LetterLevel + handles GUI
+        LetterLevel -> Creates a HexTiles layer and react to events
+        HexTiles -> Create hex tiles (LetterHexagons) and hook up events
+        HexMap -> Data structure for hexes

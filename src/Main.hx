@@ -1,5 +1,5 @@
 
-import entities.HexLevel;
+import entities.LetterLevel;
 import luxe.Input;
 import luxe.Text;
 import luxe.Vector;
@@ -9,7 +9,7 @@ import luxe.Parcel;
 import luxe.ParcelProgress;
 
 class Main extends luxe.Game {
-    var hexLevel :HexLevel;
+    var letterLevel :LetterLevel;
     var wordGuessText :Text;
 
     override function ready() {
@@ -44,10 +44,8 @@ class Main extends luxe.Game {
             align_vertical: center
         });
 
-        hexLevel = new HexLevel();
-
-        hexLevel.events.listen('spelling_word', function(data: { word :String, correct :Bool, alreadyUsed :Bool }) {
-
+        letterLevel = new LetterLevel();
+        letterLevel.events.listen('spelling_word', function(data: { word :String, correct :Bool, alreadyUsed :Bool }) {
             wordGuessText.scale.set_xy(1, 1);
 
             wordGuessText.text = data.word;
@@ -58,7 +56,7 @@ class Main extends luxe.Game {
                 .ease(luxe.tween.easing.Quad.easeInOut);
         });
 
-        hexLevel.events.listen('guessed_word', function(data: { word :String, correct :Bool, alreadyUsed :Bool }) {
+        letterLevel.events.listen('guessed_word', function(data: { word :String, correct :Bool, alreadyUsed :Bool }) {
             luxe.tween.Actuate
                 .tween(wordGuessText.scale, 0.3, { x: 0, y: 0 })
                 .ease(luxe.tween.easing.Elastic.easeInOut);
@@ -68,7 +66,7 @@ class Main extends luxe.Game {
     override function onkeyup(e :KeyEvent) {
         switch (e.keycode) {
             case Key.key_f: app.app.window.fullscreen = !app.app.window.fullscreen;
-            case Key.key_r: hexLevel.reset();
+            case Key.key_r: letterLevel.reset();
             case Key.escape: Luxe.shutdown();
         }
     } //onkeyup

@@ -24,13 +24,15 @@ class Highlighter extends Component {
 
         visual.events.listen('highlight', function(e) {
             visual.color.rgb(0x7D3101);
+            visual.foreground.scale.set_xy(1.0, 1.0);
             Actuate
                 .tween(visual.foreground.scale, 0.5, { x: 0.95, y: 0.95 })
                 .ease(luxe.tween.easing.Elastic.easeOut);
         });
 
         visual.events.listen('unhighlight', function(e) {
-            visual.color = bgcolor;
+            visual.color.set(bgcolor.r, bgcolor.g, bgcolor.b);
+            visual.foreground.scale.set_xy(0.95, 0.95);
             Actuate
                 .tween(visual.foreground.scale, 0.8, { x: 1.0, y: 1.0 })
                 .ease(luxe.tween.easing.Elastic.easeOut);

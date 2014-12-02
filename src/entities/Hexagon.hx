@@ -6,8 +6,6 @@ import luxe.Vector;
 import phoenix.geometry.Geometry;
 import luxe.Color;
 
-import HexMap.Hex;
-
 class Hexagon extends Visual {
     var shape :Geometry;
 

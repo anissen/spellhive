@@ -7,7 +7,9 @@ import phoenix.geometry.Geometry;
 import luxe.Color;
 import luxe.Text;
 
-import HexMap.Hex;
+import structures.HexMap;
+
+// import HexMap.Hex;
 
 class LetterHexagon extends Hexagon {
     public var hex(default, default) :Hex;
