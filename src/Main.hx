@@ -39,7 +39,7 @@ class Main extends luxe.Game {
             text: "",
             pos: new Vector(Luxe.screen.w / 2, Luxe.screen.h - 100),
             color: new Color().rgb(0xffffff),
-            size: 46,
+            point_size: 46,
             align: center, 
             align_vertical: center
         });

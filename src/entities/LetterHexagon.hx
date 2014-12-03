@@ -34,7 +34,7 @@ class LetterHexagon extends Hexagon {
             text: letter,
             pos: Vector.Add(this.pos, new Vector(0, -25)),
             color: new Color().rgb(0x080602),
-            size: 42,
+            point_size: 42,
             align: center, 
             align_vertical: center
         });
