@@ -45,7 +45,6 @@ class LetterLevel extends Entity {
 
         hexTiles.events.listen('chain', function(data) {
             word += data.text.toLowerCase();
-            // trace('chain, word: ${word}');
             data.hexagon.events.fire('highlight');
 
             var fromWordlist = wordlist.get(word);
@@ -55,7 +54,6 @@ class LetterLevel extends Entity {
         });
 
         hexTiles.events.listen('finish_chain', function(chain :Array<LetterHexagon>) {
-            // trace('finish chain, word: ${word}');
             var fromWordlist = wordlist.get(word);
             var inWordlist   = (fromWordlist != null);
             var alreadyUsed  = false;
@@ -98,13 +96,16 @@ class LetterLevel extends Entity {
         var emptySortedKeys = hexTiles.getTilesWhere(function(h) { return hexTiles.hexmap.getTile(h) == null; });
         emptySortedKeys.sort(function(a, b) { return b.y - a.y; });
         emptySortedKeys.sort(function(a, b) { return b.x - a.x; });
+
+        var changed :Bool = false;
         for (hex in emptySortedKeys) {
             delay = 0;
-            fillGap(hex);
+            changed = changed || fillGap(hex);
         }
+        if (changed) fillGaps();
     }
 
-    function fillGap(hex :Hex) {
+    function fillGap(hex :Hex) :Bool {
         var directions = switch (Math.random() < 0.5) {
             case true:  [Direction.NW, Direction.NE];
             case false: [Direction.NE, Direction.NW];
@@ -131,9 +132,10 @@ class LetterLevel extends Entity {
                 delay += 0.25;
 
                 fillGap(oldHex);
-                break;
+                return true;
             }
         }
+        return false;
     }
 
 } //Main
