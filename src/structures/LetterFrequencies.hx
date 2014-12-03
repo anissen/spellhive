@@ -30,7 +30,7 @@ class LetterFrequencies {
         3853    => "Y",
         128     => "Z"
     ];
-    var en_total_weight :Int;
+    var en_total_weight :Int = 0;
 
     public function new() {
         for (frequency in en.keys()) en_total_weight += frequency;
