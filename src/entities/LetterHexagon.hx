@@ -9,11 +9,8 @@ import luxe.Text;
 
 import structures.HexMap;
 
-// import HexMap.Hex;
-
 class LetterHexagon extends Hexagon {
     public var hex(default, default) :Hex;
-    // var background :Hexagon;
     public var foreground :Hexagon;
     var text :Text;
 
@@ -22,7 +19,6 @@ class LetterHexagon extends Hexagon {
 
         hex = _hex;
 
-        // background = new Hexagon(_pos, _size, new Color().rgb(0x111111));
         var foregroundColor = new Color().rgb(0xf9d578);
         foregroundColor.r += Math.random() * 0.05;
         foregroundColor.g += Math.random() * 0.05;
@@ -32,18 +28,15 @@ class LetterHexagon extends Hexagon {
 
         text = new Text({
             text: letter,
-            pos: Vector.Add(this.pos, new Vector(0, -25)),
+            pos: this.pos,
             color: new Color().rgb(0x080602),
             point_size: 42,
             align: center, 
             align_vertical: center
         });
         this.transform.listen_pos(function(v) {
-            text.pos = Vector.Add(v, new Vector(0, -25));
+            text.pos = v.clone();
         });
-
-        // add(Background);
-        // add(Text);
     }
 
     public function kill() {
